@@ -11,15 +11,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
+import { MainQuestHeader } from "@/components/MainQuestHeader";
 
 const FILTERS = ["Nearby", "Trending", "Friends", "Events"] as const;
 
-const INVITE_FEATURES = [
-  { label: "Mutual Map", icon: "map" as const },
-  { label: "Avg XP", icon: "star" as const },
-  { label: "Dish Search", icon: "search" as const },
-  { label: "Sharing", icon: "share-social" as const },
-  { label: "Ghost Mode", icon: "eye-off" as const },
+const FOR_YOU = [
+  { id: "fy1", title: "Sunset at Twin Peaks", category: "Adventure", reason: "Based on your interest in Hiking", location: "San Francisco" },
+  { id: "fy2", title: "Study session at Ritual", category: "Coffee", reason: "Popular with your friends", location: "Mission District" },
+  { id: "fy3", title: "Pickup basketball", category: "Sports", reason: "Trending near you", location: "Dolores Park" },
 ];
 
 const SUGGESTED = [
@@ -34,8 +33,8 @@ const FEATURED_LISTS = [
 ];
 
 const FEED_QUESTS = [
-  { id: "1", title: "Sunrise hike at Eagle Peak", category: "Hiking", location: "Eagle Peak", xp: 120, username: "alex_quest", likes: 4, comments: 2, liked: false },
-  { id: "2", title: "Coffee & study at Blue Bottle", category: "Coffee", location: "Mission District", xp: 50, username: "jordan_r", likes: 12, comments: 3, liked: true },
+  { id: "1", title: "Sunrise hike at Eagle Peak", category: "Hiking", location: "Eagle Peak", username: "alex_quest", likes: 4, comments: 2, liked: false },
+  { id: "2", title: "Coffee & study at Blue Bottle", category: "Coffee", location: "Mission District", username: "jordan_r", likes: 12, comments: 3, liked: true },
 ];
 
 export default function MainQuestTabScreen() {
@@ -67,23 +66,14 @@ export default function MainQuestTabScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Sticky header */}
-      <View style={styles.header}>
-        <View style={styles.wordmark}>
-          <Text style={styles.wordmarkMain}>main</Text>
-          <Text style={styles.wordmarkQuest}>quest</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIcon} hitSlop={12}>
-            <Ionicons name="notifications-outline" size={24} color={colors.textOnLight} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerIcon} hitSlop={12}>
-            <Ionicons name="menu" size={24} color={colors.textOnLight} />
-          </TouchableOpacity>
+      <MainQuestHeader
+        variant="light"
+        rightExtra={
           <TouchableOpacity onPress={() => Router.push("/(tabs)/profile")} hitSlop={8}>
             <View style={styles.avatar} />
           </TouchableOpacity>
-        </View>
-      </View>
+        }
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -123,24 +113,31 @@ export default function MainQuestTabScreen() {
           })}
         </ScrollView>
 
-        {/* Invite card */}
-        <View style={styles.card}>
-          <Text style={styles.inviteHeadline}>You have 3 invites left!</Text>
-          <Text style={styles.inviteSub}>Unlock features as friends join (0/6)</Text>
-          <View style={styles.inviteIcons}>
-            {INVITE_FEATURES.map(({ label, icon }) => (
-              <View key={label} style={styles.inviteIconItem}>
-                <View style={styles.inviteIconWrap}>
-                  <Ionicons name={icon} size={20} color={colors.tertiaryLabel} />
-                </View>
-                <Text style={styles.inviteIconLabel}>{label}</Text>
-              </View>
-            ))}
-          </View>
-          <TouchableOpacity style={styles.inviteButton} activeOpacity={0.8}>
-            <Text style={styles.inviteButtonText}>Invite Friends</Text>
-          </TouchableOpacity>
+        {/* For You — personalized recommendations */}
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>For You</Text>
+          <TouchableOpacity><Text style={styles.seeAll}>See all</Text></TouchableOpacity>
         </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.forYouContent}
+        >
+          {FOR_YOU.map((rec) => (
+            <TouchableOpacity key={rec.id} style={styles.forYouCard} activeOpacity={0.9}>
+              <View style={styles.forYouPhoto} />
+              <View style={styles.forYouBody}>
+                <Text style={styles.forYouCategory}>{rec.category}</Text>
+                <Text style={styles.forYouTitle} numberOfLines={2}>{rec.title}</Text>
+                <Text style={styles.forYouReason} numberOfLines={1}>{rec.reason}</Text>
+                <View style={styles.forYouMeta}>
+                  <Ionicons name="location-outline" size={12} color={colors.textOnLightSecondary} />
+                  <Text style={styles.forYouLocation}>{rec.location}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
         {/* Sync contacts */}
         <TouchableOpacity style={styles.syncStrip} activeOpacity={0.8}>
@@ -205,9 +202,6 @@ export default function MainQuestTabScreen() {
             <View style={styles.feedPhotoWrap}>
               <View style={styles.feedPhoto} />
               <View style={styles.feedGradient} />
-              <View style={styles.feedXpBadge}>
-                <Text style={styles.feedXpText}>{q.xp} XP</Text>
-              </View>
               <View style={styles.feedPhotoFooter}>
                 <Text style={styles.feedCategory}>{q.category}</Text>
                 <Text style={styles.feedTitle}>{q.title}</Text>
@@ -248,21 +242,6 @@ export default function MainQuestTabScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#f2f2f7" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.separator,
-  },
-  wordmark: { flexDirection: "row" },
-  wordmarkMain: { fontSize: 22, fontWeight: "700", color: colors.textOnLight },
-  wordmarkQuest: { fontSize: 22, fontWeight: "700", color: colors.red },
-  headerRight: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  headerIcon: { padding: 4 },
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.separator },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
@@ -295,14 +274,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.lg,
   },
-  inviteHeadline: { fontSize: 18, fontWeight: "700", color: colors.textOnLight },
-  inviteSub: { fontSize: 14, color: colors.textOnLightSecondary, marginTop: 4, marginBottom: spacing.lg },
-  inviteIcons: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg, marginBottom: spacing.lg },
-  inviteIconItem: { alignItems: "center", width: 64 },
-  inviteIconWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.tertiaryBackground, alignItems: "center", justifyContent: "center" },
-  inviteIconLabel: { fontSize: 11, color: colors.textOnLightSecondary, marginTop: 4 },
-  inviteButton: { backgroundColor: colors.red, borderRadius: radius.lg, paddingVertical: spacing.md, alignItems: "center" },
-  inviteButtonText: { fontSize: 17, fontWeight: "600", color: "#fff" },
   syncStrip: {
     flexDirection: "row",
     alignItems: "center",
@@ -318,6 +289,20 @@ const styles = StyleSheet.create({
   sectionHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: spacing.md },
   sectionTitle: { fontSize: 17, fontWeight: "700", color: colors.textOnLight, marginBottom: spacing.md },
   seeAll: { fontSize: 15, fontWeight: "500", color: colors.red },
+  forYouContent: { gap: spacing.md, paddingBottom: spacing.lg },
+  forYouCard: {
+    width: 220,
+    backgroundColor: "#fff",
+    borderRadius: radius.xl,
+    overflow: "hidden",
+  },
+  forYouPhoto: { height: 100, backgroundColor: colors.tertiaryBackground },
+  forYouBody: { padding: spacing.md },
+  forYouCategory: { fontSize: 11, fontWeight: "600", color: colors.red, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
+  forYouTitle: { fontSize: 16, fontWeight: "700", color: colors.textOnLight },
+  forYouReason: { fontSize: 12, color: colors.textOnLightSecondary, marginTop: 4 },
+  forYouMeta: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: spacing.sm },
+  forYouLocation: { fontSize: 12, color: colors.textOnLightSecondary },
   friendRow: { flexDirection: "row", alignItems: "center", paddingVertical: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.separator },
   friendAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.tertiaryBackground, marginRight: spacing.md },
   friendBody: { flex: 1 },
@@ -339,8 +324,6 @@ const styles = StyleSheet.create({
   feedPhotoWrap: { height: 220, position: "relative" },
   feedPhoto: { ...StyleSheet.absoluteFillObject, backgroundColor: "#2c2c2e" },
   feedGradient: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.35)" },
-  feedXpBadge: { position: "absolute", top: spacing.md, right: spacing.md, backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.sm },
-  feedXpText: { fontSize: 12, fontWeight: "700", color: "#fff" },
   feedPhotoFooter: { position: "absolute", left: 0, right: 0, bottom: 0, padding: spacing.md },
   feedCategory: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.9)" },
   feedTitle: { fontSize: 18, fontWeight: "700", color: "#fff", marginTop: 2 },

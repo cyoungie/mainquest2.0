@@ -6,29 +6,31 @@ type StatsBarProps = {
   avgRating: number;
   friends: number;
   totalXp: number;
+  variant?: "light" | "dark";
 };
 
-export function StatsBar({ countries, avgRating, friends, totalXp }: StatsBarProps) {
+export function StatsBar({ countries, avgRating, friends, totalXp, variant = "dark" }: StatsBarProps) {
+  const isLight = variant === "light";
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, isLight && styles.barLight]}>
       <View style={styles.column}>
-        <Text style={styles.number}>{countries}</Text>
-        <Text style={styles.label}>Countries</Text>
+        <Text style={[styles.number, isLight && styles.numberLight]}>{countries}</Text>
+        <Text style={[styles.label, isLight && styles.labelLight]}>Countries</Text>
       </View>
-      <View style={styles.divider} />
+      <View style={[styles.divider, isLight && styles.dividerLight]} />
       <View style={styles.column}>
-        <Text style={styles.number}>{avgRating.toFixed(1)}</Text>
-        <Text style={styles.label}>Avg Rating</Text>
+        <Text style={[styles.number, isLight && styles.numberLight]}>{avgRating.toFixed(1)}</Text>
+        <Text style={[styles.label, isLight && styles.labelLight]}>Avg Rating</Text>
       </View>
-      <View style={styles.divider} />
+      <View style={[styles.divider, isLight && styles.dividerLight]} />
       <View style={styles.column}>
-        <Text style={styles.number}>{friends}</Text>
-        <Text style={styles.label}>Friends</Text>
+        <Text style={[styles.number, isLight && styles.numberLight]}>{friends}</Text>
+        <Text style={[styles.label, isLight && styles.labelLight]}>Friends</Text>
       </View>
-      <View style={styles.divider} />
+      <View style={[styles.divider, isLight && styles.dividerLight]} />
       <View style={styles.column}>
-        <Text style={styles.number}>{totalXp}</Text>
-        <Text style={styles.label}>Total XP</Text>
+        <Text style={[styles.number, isLight && styles.numberLight]}>{totalXp}</Text>
+        <Text style={[styles.label, isLight && styles.labelLight]}>Total XP</Text>
       </View>
     </View>
   );
@@ -67,4 +69,8 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: colors.separator,
   },
+  barLight: { backgroundColor: "#fff" },
+  numberLight: { color: colors.textOnLight },
+  labelLight: { color: colors.textOnLightSecondary },
+  dividerLight: { backgroundColor: colors.separator },
 });

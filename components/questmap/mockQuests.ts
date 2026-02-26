@@ -70,11 +70,17 @@ export const MOCK_QUESTS: QuestMapItem[] = [
   },
 ];
 
+// XP = 50 per event × number of people who showed up (you + friends)
+export const XP_PER_PERSON = 50;
+export function questXp(quest: { friends: { name: string; username: string }[] }) {
+  return XP_PER_PERSON * (1 + quest.friends.length);
+}
+
 export function getStats(quests: QuestMapItem[]) {
   const countries = new Set(quests.map((q) => q.country)).size;
   const avgRating = quests.length ? quests.reduce((s, q) => s + q.rating, 0) / quests.length : 0;
   const friendsSet = new Set<string>();
   quests.forEach((q) => q.friends.forEach((f) => friendsSet.add(f.username)));
-  const totalXp = quests.length * 100 + Math.round(avgRating * 10);
+  const totalXp = quests.reduce((sum, q) => sum + questXp(q), 0);
   return { countries, avgRating, friends: friendsSet.size, totalXp };
 }

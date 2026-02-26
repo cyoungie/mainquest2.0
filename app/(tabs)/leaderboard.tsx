@@ -1,8 +1,8 @@
-import { ScrollView, Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { ScrollView, Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
+import { MainQuestHeader } from "@/components/MainQuestHeader";
 
 const leaderboard = [
   { rank: 1, name: "Jordan", score: 11, you: false },
@@ -15,6 +15,7 @@ const leaderboard = [
 export default function LeaderboardScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
+      <MainQuestHeader variant="light" />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -33,7 +34,7 @@ export default function LeaderboardScreen() {
             <Text style={styles.cardTitle}>February 2025</Text>
           </View>
           <Text style={styles.cardText}>
-            Based on completed sidequests and bingo squares.
+            Based on completed sidequests.
           </Text>
         </View>
 
@@ -56,49 +57,43 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        <TouchableOpacity
-          style={styles.bingoLink}
-          onPress={() => Router.push("/(tabs)/bingo")}
-        >
-          <Ionicons name="grid" size={22} color={colors.accentViolet} />
-          <Text style={styles.bingoLinkText}>View your bingo card</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.tertiaryLabel} />
-        </TouchableOpacity>
-
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+const LIGHT_BG = "#f2f2f7";
+const CARD_BG = "#fff";
+
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe: { flex: 1, backgroundColor: LIGHT_BG },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl },
   header: { marginBottom: spacing.xl },
   title: {
     fontSize: 34,
     fontWeight: "700",
-    color: colors.label,
+    color: colors.textOnLight,
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 15,
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     marginTop: spacing.sm,
     lineHeight: 20,
   },
   card: {
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: CARD_BG,
     borderRadius: radius.xl,
     padding: spacing.lg,
     marginBottom: spacing.xl,
   },
   cardRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  cardTitle: { fontSize: 17, fontWeight: "600", color: colors.secondaryLabel },
+  cardTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLightSecondary },
   cardText: {
     fontSize: 15,
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     marginTop: spacing.sm,
     lineHeight: 20,
   },
@@ -106,40 +101,31 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: CARD_BG,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.sm,
   },
   rowYou: {
     borderWidth: 2,
-    borderColor: colors.accent + "40",
+    borderColor: colors.red + "40",
   },
   rank: {
     width: 28,
     fontSize: 17,
     fontWeight: "700",
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     textAlign: "center",
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.separator,
+    backgroundColor: "#e8e8ed",
     marginHorizontal: spacing.md,
   },
   rowBody: { flex: 1 },
-  name: { fontSize: 17, fontWeight: "600", color: colors.label },
-  nameYou: { color: colors.accent },
-  score: { fontSize: 17, fontWeight: "700", color: colors.accent },
-  bingoLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    backgroundColor: colors.secondaryBackground,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-  },
-  bingoLinkText: { flex: 1, fontSize: 17, fontWeight: "600", color: colors.accentViolet },
+  name: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
+  nameYou: { color: colors.red },
+  score: { fontSize: 17, fontWeight: "700", color: colors.red },
 });

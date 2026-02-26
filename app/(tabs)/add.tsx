@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
+import { MainQuestHeader } from "@/components/MainQuestHeader";
 
 const categories = ["hiking", "coffee", "gym", "study", "food", "sports"];
 
@@ -22,7 +23,8 @@ export default function AddQuestScreen() {
   const [when, setWhen] = useState("");
 
   return (
-    <SafeAreaView style={styles.safe} edges={["bottom"]}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
+      <MainQuestHeader variant="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.keyboard}
@@ -95,8 +97,11 @@ export default function AddQuestScreen() {
   );
 }
 
+const LIGHT_BG = "#f2f2f7";
+const CARD_BG = "#fff";
+
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe: { flex: 1, backgroundColor: LIGHT_BG },
   keyboard: { flex: 1 },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl },
@@ -104,48 +109,50 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "700",
-    color: colors.label,
+    color: colors.textOnLight,
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: 15,
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     lineHeight: 22,
     marginBottom: spacing.lg,
   },
   label: {
     fontSize: 13,
     fontWeight: "600",
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     marginBottom: spacing.sm,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: CARD_BG,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     fontSize: 17,
-    color: colors.label,
+    color: colors.textOnLight,
     marginBottom: spacing.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.separator,
   },
   categoryWrap: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginBottom: spacing.lg },
   categoryChip: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: radius.full,
-    backgroundColor: colors.tertiaryBackground,
+    backgroundColor: "#e8e8ed",
   },
   categoryChipSelected: { backgroundColor: colors.accent + "26" },
-  categoryChipText: { fontSize: 15, color: colors.tertiaryLabel },
+  categoryChipText: { fontSize: 15, color: colors.textOnLightSecondary },
   categoryChipTextSelected: { color: colors.accent, fontWeight: "600" },
   submit: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.red,
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
     alignItems: "center",
     marginTop: spacing.lg,
   },
-  submitText: { fontSize: 17, fontWeight: "600", color: "#000" },
+  submitText: { fontSize: 17, fontWeight: "600", color: "#fff" },
 });

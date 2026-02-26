@@ -1,53 +1,32 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TouchableWithoutFeedback,
-  Platform,
-  Dimensions,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import MapView, { Marker, Polyline, UrlTile } from "react-native-maps";
+import Constants from "expo-constants";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PhotoPin } from "@/components/questmap/PhotoPin";
+import { Ionicons } from "@expo/vector-icons";
 import { QuestDetailCard, type QuestDetail } from "@/components/questmap/QuestDetailCard";
 import { StatsBar } from "@/components/questmap/StatsBar";
 import { MOCK_QUESTS, getStats } from "@/components/questmap/mockQuests";
-import { colors, spacing } from "@/constants/theme";
+import { colors, spacing, radius } from "@/constants/theme";
+import { MainQuestHeader } from "@/components/MainQuestHeader";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-// CartoDB dark — no API key. Use mapType to avoid double layer on Android.
-const CARTODB_DARK_TILES =
-  "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png";
-
-const INITIAL_REGION = {
-  latitude: 37.8,
-  longitude: -122.35,
-  latitudeDelta: 0.4,
-  longitudeDelta: 0.35,
-};
+// In Expo Go, MapView crashes on this tab. Use list here; map only in dev/standalone builds.
+const isExpoGo = Constants.appOwnership === "expo";
 
 export default function QuestMapScreen() {
-  const mapRef = useRef<MapView>(null);
   const [selectedQuest, setSelectedQuest] = useState<QuestDetail | null>(null);
   const [cardVisible, setCardVisible] = useState(false);
 
   const stats = getStats(MOCK_QUESTS);
-  const routeCoords = MOCK_QUESTS.map((q) => ({ latitude: q.latitude, longitude: q.longitude }));
 
   const openCard = useCallback((quest: QuestDetail) => {
     setSelectedQuest(quest);
     setCardVisible(true);
-    const item = MOCK_QUESTS.find((q) => q.id === quest.id);
-    if (item && mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: item.latitude,
-        longitude: item.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
-    }
   }, []);
 
   const closeCard = useCallback(() => {
@@ -55,62 +34,52 @@ export default function QuestMapScreen() {
     setSelectedQuest(null);
   }, []);
 
-  const handleMapPress = useCallback(() => {
-    if (cardVisible) closeCard();
-  }, [cardVisible, closeCard]);
+  // Dev/standalone build: load map screen (react-native-maps only required here)
+  if (!isExpoGo) {
+    const QuestMapView = require("./QuestMapView").default;
+    return <QuestMapView />;
+  }
 
+  // Expo Go: list only (no MapView to avoid crash)
   return (
     <View style={styles.container}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={INITIAL_REGION}
-        mapType={Platform.OS === "android" ? "none" : "muted"}
-        onPress={handleMapPress}
-        rotateEnabled
-        pitchEnabled
-      >
-        <UrlTile urlTemplate={CARTODB_DARK_TILES} maximumZ={19} />
-        <Polyline
-          coordinates={routeCoords}
-          strokeColor={colors.red}
-          strokeWidth={3}
-          lineDashPattern={[8, 4]}
-          lineCap="round"
-          lineJoin="round"
-        />
-        {MOCK_QUESTS.map((quest, index) => (
-          <Marker
-            key={quest.id}
-            coordinate={{ latitude: quest.latitude, longitude: quest.longitude }}
-            anchor={{ x: 0.5, y: 1 }}
-            onPress={() => openCard(quest)}
-            tracksViewChanges={false}
-          >
-            <PhotoPin
-              categoryColor={quest.categoryColor}
-              size={44}
-              delay={index * 80}
-            />
-          </Marker>
-        ))}
-      </MapView>
-
-      <SafeAreaView style={styles.overlay} edges={["top"]} pointerEvents="box-none">
-        <View style={styles.header}>
-          <Text style={styles.title}>QUESTMAP</Text>
-          <Text style={styles.subtitle}>
-            Your quests on the map. Tap a pin to open.
-          </Text>
-        </View>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <MainQuestHeader variant="light" />
+        <Text style={styles.subtitle}>
+          Your quests. Tap one to open. (Map in dev build.)
+        </Text>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {MOCK_QUESTS.map((quest) => (
+            <TouchableOpacity
+              key={quest.id}
+              style={styles.row}
+              onPress={() => openCard(quest)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.pin, { backgroundColor: quest.categoryColor }]} />
+              <View style={styles.rowBody}>
+                <Text style={styles.rowTitle} numberOfLines={1}>{quest.name}</Text>
+                <Text style={styles.rowSubtitle}>
+                  {quest.city}, {quest.country} · {quest.questNumber}th quest
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textOnLightSecondary} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </SafeAreaView>
 
-      <View style={styles.statsWrap} pointerEvents="box-none">
+      <View style={styles.statsWrap}>
         <StatsBar
           countries={stats.countries}
           avgRating={stats.avgRating}
           friends={stats.friends}
           totalXp={stats.totalXp}
+          variant="light"
         />
       </View>
 
@@ -123,33 +92,40 @@ export default function QuestMapScreen() {
   );
 }
 
+const LIGHT_BG = "#f2f2f7";
+const CARD_BG = "#fff";
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  map: { ...StyleSheet.absoluteFillObject },
-  overlay: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-  },
-  header: { marginBottom: spacing.sm },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: colors.label,
-    letterSpacing: -0.5,
-  },
+  container: { flex: 1, backgroundColor: LIGHT_BG },
+  safe: { flex: 1 },
   subtitle: {
     fontSize: 14,
-    color: colors.tertiaryLabel,
-    marginTop: 2,
+    color: colors.textOnLightSecondary,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
   },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: CARD_BG,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  pin: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: spacing.md,
+  },
+  rowBody: { flex: 1, minWidth: 0 },
+  rowTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
+  rowSubtitle: { fontSize: 14, color: colors.textOnLightSecondary, marginTop: 2 },
   statsWrap: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
+    backgroundColor: CARD_BG,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.separator,
   },
 });

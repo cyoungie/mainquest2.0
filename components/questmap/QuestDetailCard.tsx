@@ -12,6 +12,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
 
+const XP_PER_PERSON = 50;
+function questXp(friends: { name: string; username: string }[]) {
+  return XP_PER_PERSON * (1 + friends.length);
+}
+
 export type QuestDetail = {
   id: string;
   questNumber: number;
@@ -118,6 +123,9 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
                   <Text style={styles.ratingText}>{quest.rating.toFixed(1)}</Text>
                 </View>
                 <Text style={styles.locationText}>{quest.city}, {quest.country}</Text>
+                <Text style={styles.xpLine}>
+                  {questXp(quest.friends)} XP · 50 × {1 + quest.friends.length} who went
+                </Text>
               </View>
             </View>
             <View style={styles.friendsRow}>
@@ -159,6 +167,12 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
                     </View>
                   ))}
                 </View>
+              </View>
+              <View style={styles.backSection}>
+                <Text style={styles.backLabel}>XP</Text>
+                <Text style={styles.backValue}>
+                  {questXp(quest.friends)} — 50 per person × {1 + quest.friends.length} who showed up
+                </Text>
               </View>
               <View style={styles.backSection}>
                 <Text style={styles.backLabel}>Rating</Text>
@@ -233,6 +247,7 @@ const styles = StyleSheet.create({
   ratingRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
   ratingText: { fontSize: 14, color: "#FFD700", fontWeight: "600" },
   locationText: { fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 2 },
+  xpLine: { fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 6 },
   friendsRow: { flexDirection: "row", alignItems: "center", padding: spacing.md, gap: spacing.sm },
   avatars: { flexDirection: "row" },
   miniAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.tertiaryBackground, borderWidth: 2, borderColor: colors.secondaryBackground },

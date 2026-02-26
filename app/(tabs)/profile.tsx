@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, StyleSheet } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
+import { MainQuestHeader } from "@/components/MainQuestHeader";
 
 const pastQuests = [
   { id: "1", title: "Sunrise hike at Eagle Peak", when: "Jan 15, 2025", people: ["Alex", "Jordan", "You"] },
@@ -11,6 +12,7 @@ const pastQuests = [
 export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
+      <MainQuestHeader variant="light" />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -73,8 +75,11 @@ export default function ProfileScreen() {
   );
 }
 
+const LIGHT_BG = "#f2f2f7";
+const CARD_BG = "#fff";
+
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe: { flex: 1, backgroundColor: LIGHT_BG },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.xl },
   header: {
@@ -86,23 +91,23 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.separator,
+    backgroundColor: "#e8e8ed",
     marginRight: spacing.lg,
   },
   headerText: {},
-  name: { fontSize: 22, fontWeight: "700", color: colors.label },
-  handle: { fontSize: 15, color: colors.tertiaryLabel, marginTop: 4 },
+  name: { fontSize: 22, fontWeight: "700", color: colors.textOnLight },
+  handle: { fontSize: 15, color: colors.textOnLightSecondary, marginTop: 4 },
   card: {
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: CARD_BG,
     borderRadius: radius.xl,
     padding: spacing.xl,
     marginBottom: spacing.xl,
   },
   cardRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  cardTitle: { fontSize: 17, fontWeight: "600", color: colors.secondaryLabel },
+  cardTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLightSecondary },
   cardText: {
     fontSize: 15,
-    color: colors.tertiaryLabel,
+    color: colors.textOnLightSecondary,
     marginTop: spacing.sm,
     lineHeight: 22,
   },
@@ -120,13 +125,15 @@ const styles = StyleSheet.create({
   section: { marginBottom: spacing.xxl },
   scrapbookList: { marginTop: spacing.md, gap: spacing.sm },
   scrapbookItem: {
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: CARD_BG,
     borderRadius: radius.lg,
     padding: spacing.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.separator,
   },
-  scrapbookTitle: { fontSize: 17, fontWeight: "600", color: colors.label },
-  scrapbookWhen: { fontSize: 13, color: colors.tertiaryLabel, marginTop: 4 },
-  scrapbookPeople: { fontSize: 15, color: colors.tertiaryLabel, marginTop: 4 },
+  scrapbookTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
+  scrapbookWhen: { fontSize: 13, color: colors.textOnLightSecondary, marginTop: 4 },
+  scrapbookPeople: { fontSize: 15, color: colors.textOnLightSecondary, marginTop: 4 },
   emptyScrapbook: {
     borderWidth: 1,
     borderStyle: "dashed",
@@ -135,5 +142,5 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     marginTop: spacing.md,
   },
-  emptyText: { fontSize: 15, color: colors.tertiaryLabel, textAlign: "center" },
+  emptyText: { fontSize: 15, color: colors.textOnLightSecondary, textAlign: "center" },
 });
