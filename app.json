@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "MainQuest",
+    "slug": "mainquest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "mainquest",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mainquest.app"
+    },
+    "android": {
+      "package": "com.mainquest.app"
+    },
+    "plugins": ["expo-router"]
+  }
+}
