@@ -9,7 +9,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent,
+        tabBarActiveTintColor: colors.red,
         tabBarInactiveTintColor: colors.tertiaryLabel,
         tabBarStyle: Platform.select({
           ios: {
@@ -58,7 +58,7 @@ export default function TabLayout() {
               <Ionicons
                 name="add"
                 size={28}
-                color={focused ? "#000" : colors.label}
+                color={focused ? "#fff" : colors.label}
               />
             </View>
           ),
@@ -109,6 +109,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   addIconWrapActive: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.red,
   },
 });

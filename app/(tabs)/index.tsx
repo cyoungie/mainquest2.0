@@ -74,10 +74,10 @@ export default function MainQuestTabScreen() {
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon} hitSlop={12}>
-            <Ionicons name="notifications-outline" size={24} color={colors.label} />
+            <Ionicons name="notifications-outline" size={24} color={colors.textOnLight} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerIcon} hitSlop={12}>
-            <Ionicons name="menu" size={24} color={colors.label} />
+            <Ionicons name="menu" size={24} color={colors.textOnLight} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => Router.push("/(tabs)/profile")} hitSlop={8}>
             <View style={styles.avatar} />
@@ -92,11 +92,11 @@ export default function MainQuestTabScreen() {
       >
         {/* Search bar */}
         <View style={styles.searchWrap}>
-          <Ionicons name="search" size={20} color={colors.tertiaryLabel} />
+          <Ionicons name="search" size={20} color={colors.textOnLightSecondary} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search quests, people, places…"
-            placeholderTextColor={colors.tertiaryLabel}
+            placeholderTextColor={colors.textOnLightSecondary}
             editable={false}
           />
         </View>
@@ -144,7 +144,7 @@ export default function MainQuestTabScreen() {
 
         {/* Sync contacts */}
         <TouchableOpacity style={styles.syncStrip} activeOpacity={0.8}>
-          <Ionicons name="call-outline" size={20} color={colors.label} />
+          <Ionicons name="call-outline" size={20} color={colors.textOnLight} />
           <Text style={styles.syncText}>Sync your contacts — find friends already on MainQuest</Text>
           <Text style={styles.syncLink}>Sync →</Text>
         </TouchableOpacity>
@@ -224,16 +224,16 @@ export default function MainQuestTabScreen() {
                   <Ionicons
                     name={liked.has(q.id) ? "heart" : "heart-outline"}
                     size={22}
-                    color={liked.has(q.id) ? colors.red : colors.label}
+                    color={liked.has(q.id) ? colors.red : colors.textOnLight}
                   />
                   <Text style={styles.feedActionCount}>{q.likes + (liked.has(q.id) ? 1 : 0)}</Text>
                 </TouchableOpacity>
                 <View style={styles.feedAction}>
-                  <Ionicons name="chatbubble-outline" size={20} color={colors.label} />
+                  <Ionicons name="chatbubble-outline" size={20} color={colors.textOnLight} />
                   <Text style={styles.feedActionCount}>{q.comments}</Text>
                 </View>
                 <TouchableOpacity style={styles.feedAction} hitSlop={8}>
-                  <Ionicons name="share-outline" size={20} color={colors.label} />
+                  <Ionicons name="share-outline" size={20} color={colors.textOnLight} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.separator,
   },
   wordmark: { flexDirection: "row" },
-  wordmarkMain: { fontSize: 22, fontWeight: "700", color: "#1c1c1e" },
+  wordmarkMain: { fontSize: 22, fontWeight: "700", color: colors.textOnLight },
   wordmarkQuest: { fontSize: 22, fontWeight: "700", color: colors.red },
   headerRight: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
   headerIcon: { padding: 4 },
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.sm,
   },
-  searchInput: { flex: 1, fontSize: 16, color: colors.label, paddingVertical: 0 },
+  searchInput: { flex: 1, fontSize: 16, color: colors.textOnLight, paddingVertical: 0 },
   filtersScroll: { marginBottom: spacing.xl },
   filtersContent: { gap: spacing.sm, paddingRight: spacing.lg },
   pill: {
@@ -284,10 +284,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.full,
     borderWidth: 1.5,
-    borderColor: colors.separator,
+    borderColor: colors.textOnLightSecondary,
   },
   pillActive: { backgroundColor: colors.red, borderColor: colors.red },
-  pillText: { fontSize: 15, fontWeight: "600", color: colors.label },
+  pillText: { fontSize: 15, fontWeight: "600", color: colors.textOnLight },
   pillTextActive: { color: "#fff" },
   card: {
     backgroundColor: "#fff",
@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.lg,
   },
-  inviteHeadline: { fontSize: 18, fontWeight: "700", color: colors.label },
-  inviteSub: { fontSize: 14, color: colors.tertiaryLabel, marginTop: 4, marginBottom: spacing.lg },
+  inviteHeadline: { fontSize: 18, fontWeight: "700", color: colors.textOnLight },
+  inviteSub: { fontSize: 14, color: colors.textOnLightSecondary, marginTop: 4, marginBottom: spacing.lg },
   inviteIcons: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg, marginBottom: spacing.lg },
   inviteIconItem: { alignItems: "center", width: 64 },
   inviteIconWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.tertiaryBackground, alignItems: "center", justifyContent: "center" },
-  inviteIconLabel: { fontSize: 11, color: colors.tertiaryLabel, marginTop: 4 },
+  inviteIconLabel: { fontSize: 11, color: colors.textOnLightSecondary, marginTop: 4 },
   inviteButton: { backgroundColor: colors.red, borderRadius: radius.lg, paddingVertical: spacing.md, alignItems: "center" },
   inviteButtonText: { fontSize: 17, fontWeight: "600", color: "#fff" },
   syncStrip: {
@@ -313,20 +313,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.sm,
   },
-  syncText: { flex: 1, fontSize: 14, color: colors.label },
+  syncText: { flex: 1, fontSize: 14, color: colors.textOnLight },
   syncLink: { fontSize: 15, fontWeight: "600", color: colors.red },
   sectionHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: spacing.md },
-  sectionTitle: { fontSize: 17, fontWeight: "700", color: colors.label, marginBottom: spacing.md },
+  sectionTitle: { fontSize: 17, fontWeight: "700", color: colors.textOnLight, marginBottom: spacing.md },
   seeAll: { fontSize: 15, fontWeight: "500", color: colors.red },
   friendRow: { flexDirection: "row", alignItems: "center", paddingVertical: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.separator },
   friendAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.tertiaryBackground, marginRight: spacing.md },
   friendBody: { flex: 1 },
-  friendName: { fontSize: 17, fontWeight: "600", color: colors.label },
-  friendMutual: { fontSize: 13, color: colors.tertiaryLabel, marginTop: 2 },
+  friendName: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
+  friendMutual: { fontSize: 13, color: colors.textOnLightSecondary, marginTop: 2 },
   followBtn: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: radius.full, borderWidth: 1.5, borderColor: colors.red },
   followBtnActive: { backgroundColor: colors.tertiaryBackground, borderColor: "transparent" },
   followBtnText: { fontSize: 15, fontWeight: "600", color: colors.red },
-  followBtnTextActive: { color: colors.tertiaryLabel },
+  followBtnTextActive: { color: colors.textOnLightSecondary },
   featuredContent: { gap: spacing.lg, paddingBottom: spacing.lg },
   featuredCard: { width: 200, height: 140, borderRadius: radius.lg, overflow: "hidden" },
   featuredPhoto: { ...StyleSheet.absoluteFillObject },
@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
   feedMeta: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: spacing.md },
   feedUser: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   feedAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.tertiaryBackground },
-  feedUsername: { fontSize: 15, fontWeight: "600", color: colors.label },
+  feedUsername: { fontSize: 15, fontWeight: "600", color: colors.textOnLight },
   feedActions: { flexDirection: "row", alignItems: "center", gap: spacing.xl },
   feedAction: { flexDirection: "row", alignItems: "center", gap: 4 },
-  feedActionCount: { fontSize: 13, color: colors.tertiaryLabel },
+  feedActionCount: { fontSize: 13, color: colors.textOnLightSecondary },
 });
