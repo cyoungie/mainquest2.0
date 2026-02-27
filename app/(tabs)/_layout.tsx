@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { Platform, View, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/constants/theme";
+import { colors, gotham } from "@/constants/theme";
 
 export default function TabLayout() {
   return (
@@ -10,7 +10,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.red,
-        tabBarInactiveTintColor: colors.tertiaryLabel,
+        tabBarInactiveTintColor: colors.textOnLightSecondary,
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
@@ -18,17 +18,17 @@ export default function TabLayout() {
             backgroundColor: "transparent",
           },
           default: {
-            backgroundColor: colors.secondaryBackground,
+            backgroundColor: "#f2f2f7",
           },
         }),
         tabBarBackground: Platform.OS === "ios" ? () => (
           <BlurView
             intensity={80}
-            tint="dark"
+            tint="light"
             style={{ flex: 1, overflow: "hidden" }}
           />
         ) : undefined,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: "500" },
+        tabBarLabelStyle: { fontSize: 10, fontFamily: gotham.medium },
       }}
     >
       <Tabs.Screen
@@ -55,11 +55,11 @@ export default function TabLayout() {
           title: "Add",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.addIconWrap, focused && styles.addIconWrapActive]}>
-              <Ionicons
-                name="add"
-                size={28}
-                color={focused ? "#fff" : colors.label}
-              />
+          <Ionicons
+            name="add"
+            size={28}
+            color={focused ? "#fff" : colors.textOnLight}
+          />
             </View>
           ),
           tabBarLabel: () => null,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.tertiaryLabel,
+    backgroundColor: colors.textOnLightSecondary,
     alignItems: "center",
     justifyContent: "center",
   },

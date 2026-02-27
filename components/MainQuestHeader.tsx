@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, type ReactNode } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, spacing } from "@/constants/theme";
+import { colors, spacing, gotham } from "@/constants/theme";
 
 type MainQuestHeaderProps = {
   /** "light" = white bar, dark text (main tab). "dark" = transparent/dark, light text (other tabs) */
@@ -51,10 +51,10 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   wordmark: { flexDirection: "row" },
-  wordmarkMain: { fontSize: 22, fontWeight: "700" },
+  wordmarkMain: { fontSize: 22, fontFamily: gotham.bold },
   wordmarkMainLight: { color: colors.textOnLight },
   wordmarkMainDark: { color: colors.label },
-  wordmarkQuest: { fontSize: 22, fontWeight: "700", color: colors.red },
+  wordmarkQuest: { fontSize: 22, fontFamily: gotham.bold, color: colors.red },
   headerRight: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
   headerIcon: { padding: 4 },
 });

@@ -43,3 +43,11 @@ export const fonts = {
   numberSerif: "CormorantGaramond_600SemiBold", // fallback: system serif
   labelSans: "DMSans_600SemiBold",               // fallback: system
 };
+
+// Gotham typography — use these for all app text. Load Gotham font files in app _layout to enable.
+export const gotham = {
+  book: "Gotham-Book",     // 400 / regular
+  medium: "Gotham-Medium", // 500
+  bold: "Gotham-Bold",     // 700
+  black: "Gotham-Black",   // 800
+} as const;

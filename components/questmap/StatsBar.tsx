@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { colors, spacing, gotham } from "@/constants/theme";
 
 type StatsBarProps = {
   countries: number;
@@ -50,19 +50,17 @@ const styles = StyleSheet.create({
   column: { flex: 1, alignItems: "center" },
   number: {
     fontSize: 22,
-    fontWeight: "600",
+    fontFamily: gotham.medium,
     color: colors.label,
     fontVariant: ["tabular-nums"],
-    // Optional: set fontFamily to fonts.numberSerif after loading Cormorant Garamond
   },
   label: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: gotham.medium,
     color: colors.tertiaryLabel,
     marginTop: 2,
     letterSpacing: 1,
     textTransform: "uppercase",
-    // Optional: set fontFamily to fonts.labelSans after loading DM Sans
   },
   divider: {
     width: StyleSheet.hairlineWidth,
@@ -72,5 +70,5 @@ const styles = StyleSheet.create({
   barLight: { backgroundColor: "#fff" },
   numberLight: { color: colors.textOnLight },
   labelLight: { color: colors.textOnLightSecondary },
-  dividerLight: { backgroundColor: colors.separator },
+  dividerLight: { backgroundColor: "rgba(0,0,0,0.08)" },
 });

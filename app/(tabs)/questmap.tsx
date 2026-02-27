@@ -3,20 +3,14 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
 } from "react-native";
-import Constants from "expo-constants";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import { QuestDetailCard, type QuestDetail } from "@/components/questmap/QuestDetailCard";
 import { StatsBar } from "@/components/questmap/StatsBar";
+import { LeafletMapView } from "@/components/questmap/LeafletMapView";
 import { MOCK_QUESTS, getStats } from "@/components/questmap/mockQuests";
-import { colors, spacing, radius } from "@/constants/theme";
+import { colors, spacing, gotham } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
-
-// In Expo Go, MapView crashes on this tab. Use list here; map only in dev/standalone builds.
-const isExpoGo = Constants.appOwnership === "expo";
 
 export default function QuestMapScreen() {
   const [selectedQuest, setSelectedQuest] = useState<QuestDetail | null>(null);
@@ -34,45 +28,33 @@ export default function QuestMapScreen() {
     setSelectedQuest(null);
   }, []);
 
-  // Dev/standalone build: load map screen (react-native-maps only required here)
-  if (!isExpoGo) {
-    const QuestMapView = require("./QuestMapView").default;
-    return <QuestMapView />;
-  }
+  const handleMapTap = useCallback(() => {
+    if (cardVisible) closeCard();
+  }, [cardVisible, closeCard]);
 
-  // Expo Go: list only (no MapView to avoid crash)
+  const handleMarkerTap = useCallback(
+    (questId: string) => {
+      const quest = MOCK_QUESTS.find((q) => q.id === questId);
+      if (quest) openCard(quest);
+    },
+    [openCard]
+  );
+
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safe} edges={["top"]}>
+      <SafeAreaView style={styles.headerBlock} edges={["top"]}>
         <MainQuestHeader variant="light" />
         <Text style={styles.subtitle}>
-          Your quests. Tap one to open. (Map in dev build.)
+          Your quests on the map. Tap a pin to open. Tap empty space to close.
         </Text>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {MOCK_QUESTS.map((quest) => (
-            <TouchableOpacity
-              key={quest.id}
-              style={styles.row}
-              onPress={() => openCard(quest)}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.pin, { backgroundColor: quest.categoryColor }]} />
-              <View style={styles.rowBody}>
-                <Text style={styles.rowTitle} numberOfLines={1}>{quest.name}</Text>
-                <Text style={styles.rowSubtitle}>
-                  {quest.city}, {quest.country} · {quest.questNumber}th quest
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.textOnLightSecondary} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
       </SafeAreaView>
-
+      <View style={styles.mapContainer}>
+        <LeafletMapView
+          quests={MOCK_QUESTS}
+          onMapTap={handleMapTap}
+          onMarkerTap={handleMarkerTap}
+        />
+      </View>
       <View style={styles.statsWrap}>
         <StatsBar
           countries={stats.countries}
@@ -82,7 +64,6 @@ export default function QuestMapScreen() {
           variant="light"
         />
       </View>
-
       <QuestDetailCard
         quest={selectedQuest}
         onClose={closeCard}
@@ -92,39 +73,23 @@ export default function QuestMapScreen() {
   );
 }
 
-const LIGHT_BG = "#f2f2f7";
-const CARD_BG = "#fff";
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: LIGHT_BG },
-  safe: { flex: 1 },
+  container: { flex: 1, backgroundColor: "#f2f2f7" },
+  headerBlock: {
+    backgroundColor: "#fff",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.separator,
+  },
   subtitle: {
     fontSize: 14,
+    fontFamily: gotham.book,
     color: colors.textOnLightSecondary,
     paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
   },
-  scroll: { flex: 1 },
-  scrollContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: CARD_BG,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  pin: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: spacing.md,
-  },
-  rowBody: { flex: 1, minWidth: 0 },
-  rowTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
-  rowSubtitle: { fontSize: 14, color: colors.textOnLightSecondary, marginTop: 2 },
+  mapContainer: { flex: 1 },
   statsWrap: {
-    backgroundColor: CARD_BG,
+    backgroundColor: "#fff",
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.separator,
   },

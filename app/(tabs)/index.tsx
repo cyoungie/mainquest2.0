@@ -6,19 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, spacing, radius } from "@/constants/theme";
+import { colors, spacing, radius, gotham } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
 
 const FILTERS = ["Nearby", "Trending", "Friends", "Events"] as const;
 
 const FOR_YOU = [
-  { id: "fy1", title: "Sunset at Twin Peaks", category: "Adventure", reason: "Based on your interest in Hiking", location: "San Francisco" },
-  { id: "fy2", title: "Study session at Ritual", category: "Coffee", reason: "Popular with your friends", location: "Mission District" },
-  { id: "fy3", title: "Pickup basketball", category: "Sports", reason: "Trending near you", location: "Dolores Park" },
+  { id: "fy1", title: "Sunset at Twin Peaks", category: "Adventure", reason: "Based on your interest in Hiking", location: "San Francisco", image: require("@/assets/for-you-twin-peaks.png") },
+  { id: "fy2", title: "Study session at Ritual", category: "Coffee", reason: "Popular with your friends", location: "Mission District", image: require("@/assets/for-you-ritual-coffee.png") },
+  { id: "fy3", title: "Pickup basketball", category: "Sports", reason: "Trending near you", location: "Dolores Park", image: require("@/assets/for-you-basketball.png") },
 ];
 
 const SUGGESTED = [
@@ -28,19 +29,55 @@ const SUGGESTED = [
 ];
 
 const FEATURED_LISTS = [
-  { id: "1", title: "10 Campus Legends", count: 10, done: 0 },
-  { id: "2", title: "SF Night Quests", count: 8, done: 0 },
+  { id: "1", title: "10 Campus Legends", count: 10, done: 0, image: require("@/assets/featured-campus-legends.png") },
+  { id: "2", title: "SF Night Quests", count: 8, done: 0, image: require("@/assets/featured-sf-night.png") },
 ];
 
 const FEED_QUESTS = [
-  { id: "1", title: "Sunrise hike at Eagle Peak", category: "Hiking", location: "Eagle Peak", username: "alex_quest", likes: 4, comments: 2, liked: false },
-  { id: "2", title: "Coffee & study at Blue Bottle", category: "Coffee", location: "Mission District", username: "jordan_r", likes: 12, comments: 3, liked: true },
+  {
+    id: "1",
+    title: "Sunset at Twin Peaks",
+    category: "Adventure",
+    location: "Twin Peaks",
+    when: "This Saturday · 6pm",
+    friends: [{ username: "jordan_r", name: "Jordan" }],
+    mutualsCount: 2,
+    image: require("@/assets/feed-hike-eagle-peak.png"),
+    likes: 4,
+    comments: 2,
+    liked: false,
+  },
+  {
+    id: "2",
+    title: "Coffee & study at Blue Bottle",
+    category: "Coffee",
+    location: "Mission District",
+    when: "Tomorrow · 2pm",
+    friends: [{ username: "alex_quest", name: "Alex" }, { username: "sam_hikes", name: "Sam" }],
+    mutualsCount: 3,
+    image: require("@/assets/feed-blue-bottle.png"),
+    likes: 12,
+    comments: 3,
+    liked: true,
+  },
+  {
+    id: "3",
+    title: "Pickup basketball",
+    category: "Sports",
+    location: "Dolores Park",
+    when: "Tonight · 5pm",
+    friends: [{ username: "jordan_r", name: "Jordan" }],
+    mutualsCount: 1,
+    image: require("@/assets/for-you-basketball.png"),
+    likes: 8,
+    comments: 1,
+    liked: false,
+  },
 ];
 
 export default function MainQuestTabScreen() {
   const [activeFilter, setActiveFilter] = useState<(typeof FILTERS)[number]>("Trending");
   const [following, setFollowing] = useState<Set<string>>(new Set(["jordan_r"]));
-  const [liked, setLiked] = useState<Set<string>>(new Set(["2"]));
 
   const toggleFollow = (id: string) => {
     setFollowing((prev) => {
@@ -50,15 +87,6 @@ export default function MainQuestTabScreen() {
         if (next.has(name)) next.delete(name);
         else next.add(name);
       }
-      return next;
-    });
-  };
-
-  const toggleLike = (id: string) => {
-    setLiked((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
       return next;
     });
   };
@@ -125,7 +153,7 @@ export default function MainQuestTabScreen() {
         >
           {FOR_YOU.map((rec) => (
             <TouchableOpacity key={rec.id} style={styles.forYouCard} activeOpacity={0.9}>
-              <View style={styles.forYouPhoto} />
+              <Image source={rec.image} style={styles.forYouPhoto} resizeMode="cover" />
               <View style={styles.forYouBody}>
                 <Text style={styles.forYouCategory}>{rec.category}</Text>
                 <Text style={styles.forYouTitle} numberOfLines={2}>{rec.title}</Text>
@@ -182,9 +210,9 @@ export default function MainQuestTabScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.featuredContent}
         >
-          {FEATURED_LISTS.map(({ id, title, count, done }) => (
+          {FEATURED_LISTS.map(({ id, title, count, done, image }) => (
             <TouchableOpacity key={id} style={styles.featuredCard} activeOpacity={0.9}>
-              <View style={[styles.featuredPhoto, id === "1" ? styles.featuredPhotoA : styles.featuredPhotoB]} />
+              <Image source={image} style={styles.featuredPhoto} resizeMode="cover" />
               <View style={styles.featuredOverlay}>
                 <Text style={styles.featuredTitle}>{title}</Text>
                 <Text style={styles.featuredCount}>You've been to {done} of {count}</Text>
@@ -193,46 +221,57 @@ export default function MainQuestTabScreen() {
           ))}
         </ScrollView>
 
-        {/* Your feed */}
+        {/* Friends' quests — events & sidequests your mutuals are attending */}
         <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Your Feed</Text>
+          <View>
+            <Text style={styles.sectionTitle}>Friends' quests</Text>
+            <Text style={styles.sectionSubtitle}>
+              See what events your mutuals are attending and what sidequests they're going on
+            </Text>
+          </View>
         </View>
-        {FEED_QUESTS.map((q) => (
-          <View key={q.id} style={styles.feedCard}>
-            <View style={styles.feedPhotoWrap}>
-              <View style={styles.feedPhoto} />
-              <View style={styles.feedGradient} />
-              <View style={styles.feedPhotoFooter}>
-                <Text style={styles.feedCategory}>{q.category}</Text>
-                <Text style={styles.feedTitle}>{q.title}</Text>
-                <Text style={styles.feedLocation}>{q.location}</Text>
+        {FEED_QUESTS.map((q) => {
+          const friendLabel = q.friends.length > 1
+            ? `${q.friends[0].name} +${q.friends.length - 1} going`
+            : `${q.friends[0].name} is going`;
+          return (
+            <View key={q.id} style={styles.feedCard}>
+              <View style={styles.feedPhotoWrap}>
+                <Image source={q.image} style={styles.feedPhoto} resizeMode="cover" />
+                <View style={styles.feedGradient} />
+                <View style={styles.feedPhotoFooter}>
+                  <Text style={styles.feedCategory}>{q.category}</Text>
+                  <Text style={styles.feedTitle}>{q.title}</Text>
+                  <Text style={styles.feedLocation}>{q.location}</Text>
+                  <View style={styles.feedWhenRow}>
+                    <Ionicons name="time-outline" size={14} color="rgba(255,255,255,0.9)" />
+                    <Text style={styles.feedWhen}>{q.when}</Text>
+                  </View>
+                </View>
+                <View style={styles.feedFriendBadge}>
+                  <View style={styles.feedFriendAvatars}>
+                    {q.friends.slice(0, 2).map((f, i) => (
+                      <View key={f.username} style={[styles.feedFriendAvatar, i > 0 && styles.feedFriendAvatarOverlap]} />
+                    ))}
+                  </View>
+                  <Text style={styles.feedFriendLabel}>{friendLabel}</Text>
+                  {q.mutualsCount > 0 && (
+                    <Text style={styles.feedMutualLabel}>{q.mutualsCount} mutual{q.mutualsCount !== 1 ? "s" : ""}</Text>
+                  )}
+                </View>
               </View>
-            </View>
-            <View style={styles.feedMeta}>
-              <View style={styles.feedUser}>
-                <View style={styles.feedAvatar} />
-                <Text style={styles.feedUsername}>{q.username}</Text>
-              </View>
-              <View style={styles.feedActions}>
-                <TouchableOpacity onPress={() => toggleLike(q.id)} style={styles.feedAction} hitSlop={8}>
-                  <Ionicons
-                    name={liked.has(q.id) ? "heart" : "heart-outline"}
-                    size={22}
-                    color={liked.has(q.id) ? colors.red : colors.textOnLight}
-                  />
-                  <Text style={styles.feedActionCount}>{q.likes + (liked.has(q.id) ? 1 : 0)}</Text>
-                </TouchableOpacity>
-                <View style={styles.feedAction}>
-                  <Ionicons name="chatbubble-outline" size={20} color={colors.textOnLight} />
-                  <Text style={styles.feedActionCount}>{q.comments}</Text>
+              <View style={styles.feedMeta}>
+                <View style={styles.feedUser}>
+                  <View style={styles.feedAvatar} />
+                  <Text style={styles.feedUsername}>{q.friends.map((f) => f.name).join(", ")}</Text>
                 </View>
                 <TouchableOpacity style={styles.feedAction} hitSlop={8}>
                   <Ionicons name="share-outline" size={20} color={colors.textOnLight} />
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
 
         <View style={{ height: 120 }} />
       </ScrollView>
@@ -255,7 +294,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.sm,
   },
-  searchInput: { flex: 1, fontSize: 16, color: colors.textOnLight, paddingVertical: 0 },
+  searchInput: { flex: 1, fontSize: 16, fontFamily: gotham.book, color: colors.textOnLight, paddingVertical: 0 },
   filtersScroll: { marginBottom: spacing.xl },
   filtersContent: { gap: spacing.sm, paddingRight: spacing.lg },
   pill: {
@@ -266,7 +305,7 @@ const styles = StyleSheet.create({
     borderColor: colors.textOnLightSecondary,
   },
   pillActive: { backgroundColor: colors.red, borderColor: colors.red },
-  pillText: { fontSize: 15, fontWeight: "600", color: colors.textOnLight },
+  pillText: { fontSize: 15, fontFamily: gotham.medium, color: colors.textOnLight },
   pillTextActive: { color: "#fff" },
   card: {
     backgroundColor: "#fff",
@@ -284,11 +323,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.sm,
   },
-  syncText: { flex: 1, fontSize: 14, color: colors.textOnLight },
-  syncLink: { fontSize: 15, fontWeight: "600", color: colors.red },
+  syncText: { flex: 1, fontSize: 14, fontFamily: gotham.book, color: colors.textOnLight },
+  syncLink: { fontSize: 15, fontFamily: gotham.medium, color: colors.red },
   sectionHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: spacing.md },
-  sectionTitle: { fontSize: 17, fontWeight: "700", color: colors.textOnLight, marginBottom: spacing.md },
-  seeAll: { fontSize: 15, fontWeight: "500", color: colors.red },
+  sectionTitle: { fontSize: 17, fontFamily: gotham.bold, color: colors.textOnLight, marginBottom: spacing.md },
+  sectionSubtitle: { fontSize: 13, fontFamily: gotham.book, color: colors.textOnLightSecondary, lineHeight: 18, marginTop: -spacing.sm, marginBottom: spacing.md },
+  seeAll: { fontSize: 15, fontFamily: gotham.medium, color: colors.red },
   forYouContent: { gap: spacing.md, paddingBottom: spacing.lg },
   forYouCard: {
     width: 220,
@@ -296,43 +336,61 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     overflow: "hidden",
   },
-  forYouPhoto: { height: 100, backgroundColor: colors.tertiaryBackground },
+  forYouPhoto: { height: 100, width: "100%", backgroundColor: colors.tertiaryBackground },
   forYouBody: { padding: spacing.md },
-  forYouCategory: { fontSize: 11, fontWeight: "600", color: colors.red, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
-  forYouTitle: { fontSize: 16, fontWeight: "700", color: colors.textOnLight },
-  forYouReason: { fontSize: 12, color: colors.textOnLightSecondary, marginTop: 4 },
+  forYouCategory: { fontSize: 11, fontFamily: gotham.medium, color: colors.red, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
+  forYouTitle: { fontSize: 16, fontFamily: gotham.bold, color: colors.textOnLight },
+  forYouReason: { fontSize: 12, fontFamily: gotham.book, color: colors.textOnLightSecondary, marginTop: 4 },
   forYouMeta: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: spacing.sm },
-  forYouLocation: { fontSize: 12, color: colors.textOnLightSecondary },
+  forYouLocation: { fontSize: 12, fontFamily: gotham.book, color: colors.textOnLightSecondary },
   friendRow: { flexDirection: "row", alignItems: "center", paddingVertical: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.separator },
   friendAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.tertiaryBackground, marginRight: spacing.md },
   friendBody: { flex: 1 },
-  friendName: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
-  friendMutual: { fontSize: 13, color: colors.textOnLightSecondary, marginTop: 2 },
+  friendName: { fontSize: 17, fontFamily: gotham.medium, color: colors.textOnLight },
+  friendMutual: { fontSize: 13, fontFamily: gotham.book, color: colors.textOnLightSecondary, marginTop: 2 },
   followBtn: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: radius.full, borderWidth: 1.5, borderColor: colors.red },
   followBtnActive: { backgroundColor: colors.tertiaryBackground, borderColor: "transparent" },
-  followBtnText: { fontSize: 15, fontWeight: "600", color: colors.red },
-  followBtnTextActive: { color: colors.textOnLightSecondary },
+  followBtnText: { fontSize: 15, fontFamily: gotham.medium, color: colors.red },
+  followBtnTextActive: { fontFamily: gotham.medium, color: colors.textOnLightSecondary },
   featuredContent: { gap: spacing.lg, paddingBottom: spacing.lg },
   featuredCard: { width: 200, height: 140, borderRadius: radius.lg, overflow: "hidden" },
   featuredPhoto: { ...StyleSheet.absoluteFillObject },
-  featuredPhotoA: { backgroundColor: "#2c2c2e" },
-  featuredPhotoB: { backgroundColor: "#3a3a3c" },
   featuredOverlay: { position: "absolute", left: 0, right: 0, bottom: 0, padding: spacing.md, backgroundColor: "rgba(0,0,0,0.5)" },
-  featuredTitle: { fontSize: 16, fontWeight: "700", color: "#fff" },
-  featuredCount: { fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 2 },
+  featuredTitle: { fontSize: 16, fontFamily: gotham.bold, color: "#fff" },
+  featuredCount: { fontSize: 12, fontFamily: gotham.book, color: "rgba(255,255,255,0.8)", marginTop: 2 },
   feedCard: { backgroundColor: "#fff", borderRadius: radius.xl, marginBottom: spacing.xl, overflow: "hidden" },
   feedPhotoWrap: { height: 220, position: "relative" },
   feedPhoto: { ...StyleSheet.absoluteFillObject, backgroundColor: "#2c2c2e" },
   feedGradient: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.35)" },
   feedPhotoFooter: { position: "absolute", left: 0, right: 0, bottom: 0, padding: spacing.md },
-  feedCategory: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.9)" },
-  feedTitle: { fontSize: 18, fontWeight: "700", color: "#fff", marginTop: 2 },
-  feedLocation: { fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 2 },
+  feedCategory: { fontSize: 12, fontFamily: gotham.medium, color: "rgba(255,255,255,0.9)" },
+  feedTitle: { fontSize: 18, fontFamily: gotham.bold, color: "#fff", marginTop: 2 },
+  feedLocation: { fontSize: 13, fontFamily: gotham.book, color: "rgba(255,255,255,0.8)", marginTop: 2 },
+  feedWhenRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 6 },
+  feedWhen: { fontSize: 12, fontFamily: gotham.medium, color: "rgba(255,255,255,0.9)" },
+  feedFriendBadge: {
+    position: "absolute",
+    top: spacing.md,
+    right: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    paddingVertical: 6,
+    paddingLeft: 6,
+    paddingRight: spacing.sm,
+    borderRadius: radius.full,
+    gap: 6,
+  },
+  feedFriendAvatars: { flexDirection: "row" },
+  feedFriendAvatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.3)", borderWidth: 2, borderColor: "rgba(0,0,0,0.5)" },
+  feedFriendAvatarOverlap: { marginLeft: -10 },
+  feedFriendLabel: { fontSize: 12, fontFamily: gotham.medium, color: "#fff" },
+  feedMutualLabel: { fontSize: 11, fontFamily: gotham.book, color: "rgba(255,255,255,0.8)" },
   feedMeta: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: spacing.md },
   feedUser: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   feedAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.tertiaryBackground },
-  feedUsername: { fontSize: 15, fontWeight: "600", color: colors.textOnLight },
+  feedUsername: { fontSize: 15, fontFamily: gotham.medium, color: colors.textOnLight },
   feedActions: { flexDirection: "row", alignItems: "center", gap: spacing.xl },
   feedAction: { flexDirection: "row", alignItems: "center", gap: 4 },
-  feedActionCount: { fontSize: 13, color: colors.textOnLightSecondary },
+  feedActionCount: { fontSize: 13, fontFamily: gotham.book, color: colors.textOnLightSecondary },
 });

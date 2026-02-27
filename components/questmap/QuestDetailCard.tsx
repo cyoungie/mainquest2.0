@@ -10,12 +10,7 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, spacing, radius } from "@/constants/theme";
-
-const XP_PER_PERSON = 50;
-function questXp(friends: { name: string; username: string }[]) {
-  return XP_PER_PERSON * (1 + friends.length);
-}
+import { colors, spacing, radius, gotham } from "@/constants/theme";
 
 export type QuestDetail = {
   id: string;
@@ -39,7 +34,14 @@ type QuestDetailCardProps = {
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.55;
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.58;
+
+function ratingVibe(rating: number): string {
+  if (rating >= 4.5) return "Amazing Vibe";
+  if (rating >= 4) return "Great";
+  if (rating >= 3.5) return "Solid";
+  return "Good";
+}
 
 export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProps) {
   const slideAnim = useRef(new Animated.Value(CARD_HEIGHT)).current;
@@ -78,6 +80,8 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
     outputRange: ["180deg", "360deg"],
   });
 
+  const filledRating = Math.min(10, Math.round((quest.rating / 5) * 10));
+
   return (
     <Animated.View
       style={[
@@ -90,12 +94,8 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
       pointerEvents={visible ? "auto" : "none"}
     >
       <View style={styles.card}>
-        <TouchableOpacity style={styles.closeBtn} onPress={onClose} hitSlop={12}>
-          <Ionicons name="close" size={28} color="#fff" />
-        </TouchableOpacity>
-
         <Pressable onPress={flip} style={styles.flipArea}>
-          {/* Front */}
+          {/* Front — white card, full photo, overlay title, participants with @usernames */}
           <Animated.View
             style={[
               styles.side,
@@ -105,6 +105,7 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
               },
             ]}
           >
+            {/* Top half (majority): photo with overlaid title, quest #, location, rating */}
             <View style={styles.photoSection}>
               {quest.photoUrl ? (
                 <Image source={{ uri: quest.photoUrl }} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
@@ -112,94 +113,93 @@ export function QuestDetailCard({ quest, onClose, visible }: QuestDetailCardProp
                 <View style={styles.photoPlaceholder} />
               )}
               <View style={styles.photoGradient} />
-              <Text style={styles.questNumber}>{quest.questNumber}th quest</Text>
+              <View style={styles.questNumberPill}>
+                <Text style={styles.questNumberText}>{quest.questNumber}th quest</Text>
+              </View>
               <View style={[styles.categoryTag, { backgroundColor: quest.categoryColor }]}>
-                <Text style={styles.categoryTagText}>{quest.category}</Text>
+                <Text style={styles.categoryTagText}>{quest.category.toUpperCase()}</Text>
               </View>
               <View style={styles.photoFooter}>
-                <Text style={styles.questName}>{quest.name}</Text>
+                <Text style={styles.questName} numberOfLines={2}>{quest.name.toUpperCase()}</Text>
                 <View style={styles.ratingRow}>
                   <Ionicons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.ratingText}>{quest.rating.toFixed(1)}</Text>
+                  <Text style={styles.ratingText}>{quest.rating.toFixed(1)}/5 ({ratingVibe(quest.rating)})</Text>
                 </View>
                 <Text style={styles.locationText}>{quest.city}, {quest.country}</Text>
-                <Text style={styles.xpLine}>
-                  {questXp(quest.friends)} XP · 50 × {1 + quest.friends.length} who went
-                </Text>
               </View>
             </View>
-            <View style={styles.friendsRow}>
-              <View style={styles.avatars}>
-                {quest.friends.slice(0, 3).map((f, i) => (
-                  <View key={f.username} style={[styles.miniAvatar, { marginLeft: i > 0 ? -8 : 0 }]} />
-                ))}
-              </View>
-              <Text style={styles.friendsNames} numberOfLines={1}>
-                {quest.friends.map((f) => f.name).join(", ")}
-              </Text>
+            {/* Bottom half: vertical list of participants (avatar + @username) */}
+            <View style={styles.participantsSection}>
+              {quest.friends.slice(0, 4).map((f) => (
+                <View key={f.username} style={styles.participantRow}>
+                  <View style={styles.miniAvatar} />
+                  <Text style={styles.usernameText}>@{f.username}</Text>
+                </View>
+              ))}
               <Text style={styles.flipHint}>Tap to flip →</Text>
             </View>
           </Animated.View>
 
-          {/* Back */}
+          {/* Back — teal/mint background, QUEST #n, WENT WITH, RATING squares, YOUR NOTE */}
           <Animated.View
             style={[
               styles.side,
               styles.back,
-              {
-                transform: [{ rotateY: backRotate }],
-              },
+              { transform: [{ rotateY: backRotate }] },
             ]}
           >
+            <TouchableOpacity style={styles.closeBtnBack} onPress={onClose} hitSlop={12}>
+              <Ionicons name="close" size={24} color="#1c1c1e" />
+            </TouchableOpacity>
             <View style={styles.backContent}>
-              <View style={styles.backSection}>
-                <Text style={styles.backLabel}>Quest</Text>
-                <Text style={styles.backValue}>#{quest.questNumber} · {quest.name}</Text>
-                <Text style={styles.backValue}>{quest.city}, {quest.country} · {quest.date}</Text>
+              <Text style={[styles.backQuestTitle, { color: quest.categoryColor }]}>QUEST #{quest.questNumber}</Text>
+              <Text style={styles.backName}>{quest.name}</Text>
+              <Text style={styles.backMeta}>{quest.city}, {quest.country} · {quest.date}</Text>
+
+              <Text style={styles.backLabel}>WENT WITH:</Text>
+              <View style={styles.chipRow}>
+                {quest.friends.map((f) => (
+                  <View key={f.username} style={styles.chip}>
+                    <View style={styles.chipAvatar} />
+                    <Text style={styles.chipText}>{f.name}</Text>
+                  </View>
+                ))}
+                {quest.friends.length > 3 && (
+                  <View style={styles.chipOthers}>
+                    <View style={styles.chipAvatarOthers} />
+                    <Text style={styles.chipText}>@others</Text>
+                    <Text style={styles.chipPlus}>+{quest.friends.length - 3}</Text>
+                  </View>
+                )}
               </View>
-              <View style={styles.backSection}>
-                <Text style={styles.backLabel}>Went with</Text>
-                <View style={styles.chipRow}>
-                  {quest.friends.map((f) => (
-                    <View key={f.username} style={styles.chip}>
-                      <View style={styles.chipAvatar} />
-                      <Text style={styles.chipText}>@{f.username}</Text>
-                    </View>
-                  ))}
-                </View>
+
+              <Text style={styles.backLabel}>RATING:</Text>
+              <View style={styles.ratingSquares}>
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.ratingSquare,
+                      i < filledRating
+                        ? { backgroundColor: quest.categoryColor }
+                        : styles.ratingSquareEmpty,
+                    ]}
+                  />
+                ))}
               </View>
-              <View style={styles.backSection}>
-                <Text style={styles.backLabel}>XP</Text>
-                <Text style={styles.backValue}>
-                  {questXp(quest.friends)} — 50 per person × {1 + quest.friends.length} who showed up
-                </Text>
-              </View>
-              <View style={styles.backSection}>
-                <Text style={styles.backLabel}>Rating</Text>
-                <View style={styles.ratingBars}>
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <View
-                      key={i}
-                      style={[
-                        styles.ratingBar,
-                        {
-                          flex: i < Math.round(quest.rating) ? 1 : 0.3,
-                          backgroundColor: quest.categoryColor,
-                        },
-                      ]}
-                    />
-                  ))}
-                </View>
-                <Text style={styles.ratingNumber}>{quest.rating.toFixed(1)}/10</Text>
-              </View>
-              <View style={styles.backSection}>
-                <Text style={styles.backLabel}>Your note</Text>
-                <Text style={styles.note}>"{quest.note}"</Text>
-              </View>
+              <Text style={styles.ratingNumberBack}>{filledRating}/10</Text>
+
+              <Text style={styles.backLabel}>YOUR NOTE:</Text>
+              <Text style={styles.note}>"{quest.note}" — You</Text>
+
               <Text style={styles.flipBackHint}>Tap to flip back</Text>
             </View>
           </Animated.View>
         </Pressable>
+
+        <TouchableOpacity style={styles.closeBtnFront} onPress={onClose} hitSlop={12}>
+          <Ionicons name="close" size={26} color="#fff" />
+        </TouchableOpacity>
       </View>
     </Animated.View>
   );
@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: "#fff",
     borderRadius: radius.xl,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: colors.separator,
+    borderColor: "rgba(0,0,0,0.08)",
   },
-  closeBtn: {
+  closeBtnFront: {
     position: "absolute",
     top: spacing.md,
     right: spacing.md,
@@ -234,36 +234,79 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backfaceVisibility: "hidden",
   },
-  front: {},
-  back: { backgroundColor: colors.secondaryBackground },
-  photoSection: { height: 200, position: "relative" },
+  front: { backgroundColor: "#fff", flexDirection: "column" },
+  back: { backgroundColor: "#b8e6df" },
+  /* Top half (majority) — photo with overlaid title, #, location, rating */
+  photoSection: { flex: 1.15, minHeight: 160, position: "relative" },
   photoPlaceholder: { ...StyleSheet.absoluteFillObject, backgroundColor: "#2c2c2e" },
-  photoGradient: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.4)" },
-  questNumber: { position: "absolute", top: spacing.md, left: spacing.md, fontSize: 13, color: "rgba(255,255,255,0.9)", fontWeight: "600" },
-  categoryTag: { position: "absolute", top: spacing.md, right: spacing.md, paddingHorizontal: 8, paddingVertical: 4, borderRadius: radius.sm },
-  categoryTagText: { fontSize: 12, fontWeight: "700", color: "#fff" },
+  photoGradient: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.35)" },
+  questNumberPill: {
+    position: "absolute",
+    top: spacing.md,
+    left: spacing.md,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+  },
+  questNumberText: { fontSize: 12, fontFamily: gotham.bold, color: "#fff" },
+  categoryTag: {
+    position: "absolute",
+    top: spacing.md,
+    right: spacing.md,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+  },
+  categoryTagText: { fontSize: 11, fontFamily: gotham.black, color: "#fff", letterSpacing: 0.5 },
   photoFooter: { position: "absolute", left: 0, right: 0, bottom: 0, padding: spacing.md },
-  questName: { fontSize: 18, fontWeight: "700", color: "#fff" },
-  ratingRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
-  ratingText: { fontSize: 14, color: "#FFD700", fontWeight: "600" },
-  locationText: { fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 2 },
-  xpLine: { fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 6 },
-  friendsRow: { flexDirection: "row", alignItems: "center", padding: spacing.md, gap: spacing.sm },
-  avatars: { flexDirection: "row" },
-  miniAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.tertiaryBackground, borderWidth: 2, borderColor: colors.secondaryBackground },
-  friendsNames: { flex: 1, fontSize: 14, color: colors.label },
-  flipHint: { fontSize: 13, color: colors.tertiaryLabel },
-  backContent: { flex: 1, padding: spacing.lg, paddingTop: spacing.xxl },
-  backSection: { marginBottom: spacing.xl },
-  backLabel: { fontSize: 10, fontWeight: "700", color: colors.tertiaryLabel, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 },
-  backValue: { fontSize: 15, color: colors.label, marginBottom: 2 },
+  questName: { fontSize: 17, fontFamily: gotham.black, color: "#fff", letterSpacing: 0.5 },
+  ratingRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4 },
+  ratingText: { fontSize: 13, fontFamily: gotham.bold, color: "#FFD700" },
+  locationText: { fontSize: 13, fontFamily: gotham.book, color: "rgba(255,255,255,0.95)", marginTop: 2 },
+  /* Bottom half — list of participants (avatar + @username) */
+  participantsSection: {
+    flex: 0.85,
+    backgroundColor: "#fff",
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+    justifyContent: "flex-start",
+  },
+  participantRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  miniAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#e8e8ed", borderWidth: 2, borderColor: "#fff" },
+  usernameText: { fontSize: 14, fontFamily: gotham.medium, color: colors.textOnLight },
+  flipHint: { fontSize: 13, fontFamily: gotham.medium, color: colors.textOnLightSecondary, marginTop: spacing.xs },
+
+  backContent: { flex: 1, padding: spacing.lg, paddingTop: spacing.xxl + 4 },
+  closeBtnBack: { position: "absolute", top: spacing.md, right: spacing.md, zIndex: 10, padding: 4 },
+  backQuestTitle: { fontSize: 20, fontFamily: gotham.black, marginBottom: 4, letterSpacing: 0.5 },
+  backName: { fontSize: 17, fontFamily: gotham.bold, color: "#1c1c1e", marginBottom: 2 },
+  backMeta: { fontSize: 14, fontFamily: gotham.book, color: "#1c1c1e", opacity: 0.85, marginBottom: spacing.lg },
+  backLabel: {
+    fontSize: 11,
+    fontFamily: gotham.black,
+    color: "#1c1c1e",
+    letterSpacing: 1,
+    marginTop: spacing.md,
+    marginBottom: 6,
+  },
   chipRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
-  chip: { flexDirection: "row", alignItems: "center", backgroundColor: colors.tertiaryBackground, paddingVertical: 4, paddingHorizontal: 8, borderRadius: radius.full, gap: 6 },
-  chipAvatar: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.separator },
-  chipText: { fontSize: 13, color: colors.label },
-  ratingBars: { flexDirection: "row", alignItems: "center", gap: 4, height: 8, marginBottom: 4 },
-  ratingBar: { height: 6, borderRadius: 2, minWidth: 4 },
-  ratingNumber: { fontSize: 14, fontWeight: "600", color: colors.label },
-  note: { fontSize: 15, color: colors.secondaryLabel, fontStyle: "italic", lineHeight: 22 },
-  flipBackHint: { fontSize: 12, color: colors.tertiaryLabel, marginTop: "auto", paddingTop: spacing.lg },
+  chip: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(0,0,0,0.08)", paddingVertical: 6, paddingHorizontal: 10, borderRadius: radius.full, gap: 6 },
+  chipAvatar: { width: 22, height: 22, borderRadius: 11, backgroundColor: "rgba(0,0,0,0.2)" },
+  chipText: { fontSize: 13, fontFamily: gotham.medium, color: "#1c1c1e" },
+  chipOthers: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(0,0,0,0.08)", paddingVertical: 6, paddingHorizontal: 10, borderRadius: radius.full, gap: 4 },
+  chipAvatarOthers: { width: 22, height: 22, borderRadius: 11, backgroundColor: "rgba(0,0,0,0.15)" },
+  chipPlus: { fontSize: 11, fontFamily: gotham.bold, color: "#6c6c70" },
+  ratingSquares: { flexDirection: "row", gap: 5, marginBottom: 4 },
+  ratingSquare: { width: 22, height: 22, borderRadius: 4 },
+  ratingSquareEmpty: { backgroundColor: "transparent", borderWidth: 2, borderColor: "rgba(0,0,0,0.2)" },
+  ratingNumberBack: { fontSize: 14, fontFamily: gotham.bold, color: "#1c1c1e", marginBottom: 2 },
+  note: { fontSize: 14, fontFamily: gotham.book, color: "#1c1c1e", fontStyle: "italic", lineHeight: 20 },
+  flipBackHint: { fontSize: 12, fontFamily: gotham.book, color: "#1c1c1e", opacity: 0.8, marginTop: "auto", paddingTop: spacing.lg },
 });
