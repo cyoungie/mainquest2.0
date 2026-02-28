@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Platform, View, StyleSheet } from "react-native";
+import { Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, gotham } from "@/constants/theme";
@@ -52,26 +52,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add"
         options={{
-          title: "Add",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.addIconWrap, focused && styles.addIconWrapActive]}>
-          <Ionicons
-            name="add"
-            size={28}
-            color={focused ? "#fff" : colors.textOnLight}
-          />
-            </View>
-          ),
-          tabBarLabel: () => null,
+          href: null,
         }}
       />
       <Tabs.Screen
         name="leaderboard"
         options={{
-          title: "Leaderboard",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="trophy" size={size} color={color} />
-          ),
+          href: null,
         }}
       />
       <Tabs.Screen
@@ -99,16 +86,3 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  addIconWrap: {
-    width: 52,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.textOnLightSecondary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addIconWrapActive: {
-    backgroundColor: colors.red,
-  },
-});

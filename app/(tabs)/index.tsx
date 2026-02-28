@@ -8,8 +8,8 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Router } from "expo-router";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius, gotham } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
@@ -78,6 +78,9 @@ const FEED_QUESTS = [
 export default function MainQuestTabScreen() {
   const [activeFilter, setActiveFilter] = useState<(typeof FILTERS)[number]>("Trending");
   const [following, setFollowing] = useState<Set<string>>(new Set(["jordan_r"]));
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const fabBottom = insets.bottom + 49 + 12; // above tab bar + padding
 
   const toggleFollow = (id: string) => {
     setFollowing((prev) => {
@@ -97,7 +100,7 @@ export default function MainQuestTabScreen() {
       <MainQuestHeader
         variant="light"
         rightExtra={
-          <TouchableOpacity onPress={() => Router.push("/(tabs)/profile")} hitSlop={8}>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/profile")} hitSlop={8}>
             <View style={styles.avatar} />
           </TouchableOpacity>
         }
@@ -275,6 +278,14 @@ export default function MainQuestTabScreen() {
 
         <View style={{ height: 120 }} />
       </ScrollView>
+
+      <TouchableOpacity
+        style={[styles.fab, { bottom: fabBottom }]}
+        onPress={() => router.navigate("add")}
+        activeOpacity={0.9}
+      >
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -282,6 +293,22 @@ export default function MainQuestTabScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#f2f2f7" },
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.separator },
+  fab: {
+    position: "absolute",
+    right: spacing.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.red,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+    zIndex: 10,
+  },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
   searchWrap: {

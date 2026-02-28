@@ -8,10 +8,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { colors, spacing, radius, gotham } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
 import {
@@ -20,6 +23,7 @@ import {
   COMMUNITY_TAGS,
   type QuestTag,
 } from "@/constants/addQuestTags";
+import { createQuest } from "@/lib/quests";
 
 function formatWhen(date: Date): string {
   return date.toLocaleDateString(undefined, {
@@ -32,11 +36,13 @@ function formatWhen(date: Date): string {
 }
 
 export default function AddQuestScreen() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
   const [spots, setSpots] = useState("2");
   const [whenDate, setWhenDate] = useState<Date | null>(null);
   const [showWhenPicker, setShowWhenPicker] = useState(false);
+  const [posting, setPosting] = useState(false);
 
   const toggleTag = (id: string) => {
     setSelectedTagIds((prev) => {
@@ -45,6 +51,34 @@ export default function AddQuestScreen() {
       else next.add(id);
       return next;
     });
+  };
+
+  const handlePost = async () => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      Alert.alert("Missing title", "What are you doing? Enter a title for your sidequest.");
+      return;
+    }
+    const spotsNum = parseInt(spots, 10);
+    if (isNaN(spotsNum) || spotsNum < 1) {
+      Alert.alert("Invalid spots", "How many people (including you)? Enter at least 1.");
+      return;
+    }
+    setPosting(true);
+    const { data, error } = await createQuest({
+      title: trimmedTitle,
+      tagIds: Array.from(selectedTagIds),
+      spots: spotsNum,
+      whenAt: whenDate,
+    });
+    setPosting(false);
+    if (error) {
+      Alert.alert("Couldn't post", error.message);
+      return;
+    }
+    if (data) {
+      router.back();
+    }
   };
 
   const renderTag = (tag: QuestTag) => {
@@ -193,8 +227,17 @@ export default function AddQuestScreen() {
             </View>
           )}
 
-          <TouchableOpacity style={styles.submit} activeOpacity={0.8}>
-            <Text style={styles.submitText}>Post sidequest</Text>
+          <TouchableOpacity
+            style={styles.submit}
+            onPress={handlePost}
+            disabled={posting}
+            activeOpacity={0.8}
+          >
+            {posting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.submitText}>Post sidequest</Text>
+            )}
           </TouchableOpacity>
 
           <View style={{ height: 100 }} />

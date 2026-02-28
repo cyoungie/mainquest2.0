@@ -9,9 +9,12 @@
     "android": "expo start --android",
     "web": "expo start --web"
   },
-"dependencies": {
-  "@expo-google-fonts/montserrat": "^0.2.3",
-  "@react-native-community/datetimepicker": "^8.6.0",
+  "dependencies": {
+    "@expo-google-fonts/montserrat": "^0.2.3",
+    "@react-native-async-storage/async-storage": "^3.0.1",
+    "@react-native-community/datetimepicker": "^8.6.0",
+    "@supabase/supabase-js": "^2.98.0",
+    "dotenv": "^17.3.1",
     "expo": "^55.0.2",
     "expo-blur": "~55.0.8",
     "expo-font": "~55.0.4",
@@ -24,6 +27,7 @@
     "react-native-maps": "1.26.20",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.23.0",
+    "react-native-url-polyfill": "^3.0.0",
     "react-native-webview": "^13.16.0"
   },
   "devDependencies": {

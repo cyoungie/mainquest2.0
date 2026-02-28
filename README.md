@@ -98,6 +98,8 @@ When you add a backend, use a `.env` (and `expo-constants` or `react-native-dote
 - `GOOGLE_CALENDAR_*` / `OUTLOOK_*` — Calendar sync (optional)
 - `OPENAI_API_KEY` — For recommendations and voice chatbot (optional)
 
+**Supabase (recommended):** Copy `.env.example` to `.env` and set `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` from Supabase → Project Settings → API. Run the `quests` table migration in **BACKEND-AND-USERS.md** (SQL Editor). The Add screen will then persist new sidequests.
+
 ---
 
 ## Optional: App Icon & Splash

@@ -1,13 +1,9 @@
 import { ScrollView, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, spacing, radius } from "@/constants/theme";
+import { colors, spacing, radius, gotham } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
-
-const pastQuests = [
-  { id: "1", title: "Sunrise hike at Eagle Peak", when: "Jan 15, 2025", people: ["Alex", "Jordan", "You"] },
-  { id: "2", title: "Coffee at Blue Bottle", when: "Jan 10, 2025", people: ["Jordan", "You"] },
-];
+import { IDCard } from "@/components/profile/IDCard";
 
 export default function ProfileScreen() {
   return (
@@ -18,12 +14,18 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <IDCard />
+
         <View style={styles.header}>
           <View style={styles.avatar} />
           <View style={styles.headerText}>
             <Text style={styles.name}>You</Text>
             <Text style={styles.handle}>@username · Your school</Text>
           </View>
+          <TouchableOpacity style={styles.editBtn} activeOpacity={0.8}>
+            <Ionicons name="pencil" size={18} color={colors.red} />
+            <Text style={styles.editBtnText}>Edit</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.card}>
@@ -40,33 +42,6 @@ export default function ProfileScreen() {
             <Ionicons name="sparkles" size={20} color={colors.accentViolet} />
             <Text style={styles.voiceButtonText}>Start setup (voice)</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.cardRow}>
-            <Ionicons name="book" size={22} color={colors.accent} />
-            <Text style={styles.cardTitle}>Digital scrapbook</Text>
-          </View>
-          <Text style={styles.cardText}>
-            Every sidequest you've been on and the people you went with.
-          </Text>
-          {pastQuests.length === 0 ? (
-            <View style={styles.emptyScrapbook}>
-              <Text style={styles.emptyText}>Complete quests to build your scrapbook.</Text>
-            </View>
-          ) : (
-            <View style={styles.scrapbookList}>
-              {pastQuests.map((q) => (
-                <View key={q.id} style={styles.scrapbookItem}>
-                  <Text style={styles.scrapbookTitle}>{q.title}</Text>
-                  <Text style={styles.scrapbookWhen}>{q.when}</Text>
-                  <Text style={styles.scrapbookPeople}>
-                    With {q.people.filter((p) => p !== "You").join(", ")}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
 
         <View style={{ height: 100 }} />
@@ -94,9 +69,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#e8e8ed",
     marginRight: spacing.lg,
   },
-  headerText: {},
-  name: { fontSize: 22, fontWeight: "700", color: colors.textOnLight },
-  handle: { fontSize: 15, color: colors.textOnLightSecondary, marginTop: 4 },
+  headerText: { flex: 1 },
+  name: { fontSize: 22, fontFamily: gotham.bold, color: colors.textOnLight },
+  handle: { fontSize: 15, fontFamily: gotham.book, color: colors.textOnLightSecondary, marginTop: 4 },
+  editBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    borderWidth: 1.5,
+    borderColor: colors.red,
+  },
+  editBtnText: { fontSize: 15, fontFamily: gotham.medium, color: colors.red },
   card: {
     backgroundColor: CARD_BG,
     borderRadius: radius.xl,
@@ -104,9 +90,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   cardRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  cardTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLightSecondary },
+  cardTitle: { fontSize: 17, fontFamily: gotham.medium, color: colors.textOnLight },
   cardText: {
     fontSize: 15,
+    fontFamily: gotham.book,
     color: colors.textOnLightSecondary,
     marginTop: spacing.sm,
     lineHeight: 22,
@@ -121,26 +108,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     marginTop: spacing.lg,
   },
-  voiceButtonText: { fontSize: 17, fontWeight: "600", color: colors.accentViolet },
-  section: { marginBottom: spacing.xxl },
-  scrapbookList: { marginTop: spacing.md, gap: spacing.sm },
-  scrapbookItem: {
-    backgroundColor: CARD_BG,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.separator,
-  },
-  scrapbookTitle: { fontSize: 17, fontWeight: "600", color: colors.textOnLight },
-  scrapbookWhen: { fontSize: 13, color: colors.textOnLightSecondary, marginTop: 4 },
-  scrapbookPeople: { fontSize: 15, color: colors.textOnLightSecondary, marginTop: 4 },
-  emptyScrapbook: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: colors.separator,
-    borderRadius: radius.lg,
-    padding: spacing.xxl,
-    marginTop: spacing.md,
-  },
-  emptyText: { fontSize: 15, color: colors.textOnLightSecondary, textAlign: "center" },
+  voiceButtonText: { fontSize: 17, fontFamily: gotham.medium, color: colors.accentViolet },
 });
