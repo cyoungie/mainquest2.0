@@ -2,26 +2,41 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import {
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_700Bold,
-  Montserrat_900Black,
-} from "@expo-google-fonts/montserrat";
+  BricolageGrotesque_400Regular,
+  BricolageGrotesque_500Medium,
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from "@expo-google-fonts/bricolage-grotesque";
+import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+} from "@expo-google-fonts/plus-jakarta-sans";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { colors } from "@/constants/theme";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    "Gotham-Book": Montserrat_400Regular,
-    "Gotham-Medium": Montserrat_500Medium,
-    "Gotham-Bold": Montserrat_700Bold,
-    "Gotham-Black": Montserrat_900Black,
+    BricolageGrotesque_400Regular,
+    BricolageGrotesque_500Medium,
+    BricolageGrotesque_600SemiBold,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
   });
 
   if (!fontsLoaded) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#C41E3A" />
+        <ActivityIndicator size="large" color={colors.red} />
       </View>
     );
   }

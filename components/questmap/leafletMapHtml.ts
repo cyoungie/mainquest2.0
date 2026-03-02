@@ -96,7 +96,7 @@ export function buildLeafletMapHtml(
         }).addTo(map);
 
         var routeLine = L.polyline(route, {
-          color: "#C41E3A",
+          color: "#820000",
           weight: 3,
           opacity: 0.9,
           dashArray: "8, 6",
@@ -127,7 +127,7 @@ export function buildLeafletMapHtml(
 
         quests.forEach(function(q, i) {
           var delay = i * 80;
-          var ringColor = q.categoryColor || "#C41E3A";
+          var ringColor = q.categoryColor || "#820000";
           var photoBg = q.photoUrl ? "url(" + q.photoUrl + ")" : ringColor;
           var size = 40;
           var ringSize = size + 8;

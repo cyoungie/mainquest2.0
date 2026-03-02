@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, gotham } from "@/constants/theme";
+import { colors, heading } from "@/constants/theme";
 
 export default function TabLayout() {
   return (
@@ -28,7 +28,7 @@ export default function TabLayout() {
             style={{ flex: 1, overflow: "hidden" }}
           />
         ) : undefined,
-        tabBarLabelStyle: { fontSize: 10, fontFamily: gotham.medium },
+        tabBarLabelStyle: { fontSize: 10, fontFamily: heading.medium },
       }}
     >
       <Tabs.Screen

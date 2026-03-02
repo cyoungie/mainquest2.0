@@ -3,7 +3,7 @@ import { StyleSheet, View, ActivityIndicator, Text, TouchableOpacity } from "rea
 import { WebView } from "react-native-webview";
 import type { QuestMapItem } from "@/components/questmap/mockQuests";
 import { buildLeafletMapHtml } from "@/components/questmap/leafletMapHtml";
-import { gotham } from "@/constants/theme";
+import { colors, gotham } from "@/constants/theme";
 
 const LEAFLET_CSS_URL = "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css";
 const LEAFLET_JS_URL = "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js";
@@ -95,7 +95,7 @@ export function LeafletMapView({
   if (loadState === "loading" && html === null) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color="#C41E3A" />
+        <ActivityIndicator size="large" color={colors.red} />
         <Text style={styles.loadingText}>Loading map…</Text>
       </View>
     );
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   retryBtn: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    backgroundColor: "#C41E3A",
+    backgroundColor: colors.red,
     borderRadius: 12,
   },
   retryBtnText: {

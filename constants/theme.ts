@@ -10,8 +10,8 @@ export const colors = {
   tertiaryLabel: "#8e8e93",
   separator: "#38383a",
   accent: "#ff9f0a",
-  red: "#C41E3A",           // Cardinal red (MainQuest primary)
-  cardinalRed: "#C41E3A",
+  red: "#820000",           // MainQuest primary
+  cardinalRed: "#820000",
   // Text on light/white backgrounds — use these so text is never white-on-white
   textOnLight: "#1c1c1e",
   textOnLightSecondary: "#6c6c70",
@@ -44,10 +44,28 @@ export const fonts = {
   labelSans: "DMSans_600SemiBold",               // fallback: system
 };
 
-// Gotham typography — use these for all app text. Load Gotham font files in app _layout to enable.
+// Heading: Bricolage Grotesque — use for titles, section headers, tab labels
+export const heading = {
+  regular: "BricolageGrotesque_400Regular",
+  medium: "BricolageGrotesque_500Medium",
+  semibold: "BricolageGrotesque_600SemiBold",
+  bold: "BricolageGrotesque_700Bold",
+  extrabold: "BricolageGrotesque_800ExtraBold",
+} as const;
+
+// Body: Plus Jakarta Sans — use for body text, labels, inputs
+export const body = {
+  regular: "PlusJakartaSans_400Regular",
+  medium: "PlusJakartaSans_500Medium",
+  semibold: "PlusJakartaSans_600SemiBold",
+  bold: "PlusJakartaSans_700Bold",
+  extrabold: "PlusJakartaSans_800ExtraBold",
+} as const;
+
+// Backward compatibility: gotham = body (Plus Jakarta Sans)
 export const gotham = {
-  book: "Gotham-Book",     // 400 / regular
-  medium: "Gotham-Medium", // 500
-  bold: "Gotham-Bold",     // 700
-  black: "Gotham-Black",   // 800
+  book: body.regular,
+  medium: body.medium,
+  bold: body.bold,
+  black: body.extrabold,
 } as const;

@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { colors, spacing, radius, gotham } from "@/constants/theme";
+import { colors, spacing, radius, gotham, heading } from "@/constants/theme";
 import { MainQuestHeader } from "@/components/MainQuestHeader";
 import {
   GENERAL_TAGS,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   header: { marginBottom: spacing.xl },
   title: {
     fontSize: 28,
-    fontFamily: gotham.bold,
+    fontFamily: heading.bold,
     color: colors.textOnLight,
     marginBottom: spacing.sm,
   },
