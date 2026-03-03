@@ -1,15 +1,16 @@
 import { Stack } from "expo-router";
+import { colors } from "@/constants/theme";
 
 export default function QuestsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#000000" },
-        headerTintColor: "#ffffff",
+        headerStyle: { backgroundColor: "#ffffff" },
+        headerTintColor: colors.textOnLight,
         headerBackTitle: "Back",
         headerLargeTitle: false,
         headerShadowVisible: false,
-        contentStyle: { backgroundColor: "#000000" },
+        contentStyle: { backgroundColor: "#f2f2f7" },
       }}
     >
       <Stack.Screen

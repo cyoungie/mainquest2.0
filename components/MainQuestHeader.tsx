@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, type ReactNode } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image, type ReactNode } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, spacing, heading } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
+
+const LOGO = require("@/assets/logo-mq.png");
 
 type MainQuestHeaderProps = {
   /** "light" = white bar, dark text (main tab). "dark" = transparent/dark, light text (other tabs) */
@@ -15,12 +17,7 @@ export function MainQuestHeader({ variant = "light", rightExtra }: MainQuestHead
 
   return (
     <View style={[styles.header, isLight ? styles.headerLight : styles.headerDark]}>
-      <View style={styles.wordmark}>
-        <Text style={[styles.wordmarkMain, isLight ? styles.wordmarkMainLight : styles.wordmarkMainDark]}>
-          main
-        </Text>
-        <Text style={styles.wordmarkQuest}>quest</Text>
-      </View>
+      <Image source={LOGO} style={styles.logo} resizeMode="contain" />
       <View style={styles.headerRight}>
         <TouchableOpacity style={styles.headerIcon} hitSlop={12}>
           <Ionicons name="notifications-outline" size={24} color={iconColor} />
@@ -50,11 +47,10 @@ const styles = StyleSheet.create({
   headerDark: {
     backgroundColor: "transparent",
   },
-  wordmark: { flexDirection: "row" },
-  wordmarkMain: { fontSize: 22, fontFamily: heading.bold },
-  wordmarkMainLight: { color: colors.textOnLight },
-  wordmarkMainDark: { color: colors.label },
-  wordmarkQuest: { fontSize: 22, fontFamily: heading.bold, color: colors.red },
+  logo: {
+    height: 32,
+    width: 56,
+  },
   headerRight: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
   headerIcon: { padding: 4 },
 });

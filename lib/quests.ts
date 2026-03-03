@@ -26,7 +26,7 @@ export type CreateQuestInput = {
  * Returns the new row or an error. No-op if Supabase is not configured.
  */
 export async function createQuest(input: CreateQuestInput): Promise<{ data: QuestRow | null; error: Error | null }> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured() || !supabase) {
     return { data: null, error: new Error("Backend not configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to .env") };
   }
 
@@ -50,7 +50,7 @@ export async function createQuest(input: CreateQuestInput): Promise<{ data: Ques
  * Fetch recent quests for feed/map. Returns empty array if backend not configured or error.
  */
 export async function fetchQuests(limit = 50): Promise<{ data: QuestRow[]; error: Error | null }> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseConfigured() || !supabase) {
     return { data: [], error: null };
   }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, Router } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing, radius } from "@/constants/theme";
 
@@ -18,10 +18,16 @@ const quest = {
 };
 
 export default function QuestDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string }>();
+  const router = useRouter();
+  const id = params.id != null ? (Array.isArray(params.id) ? params.id[0] : params.id) : "";
   const [imDown, setImDown] = useState(false);
   const full = quest.joined >= quest.spots;
   const canJoin = !full && !imDown;
+
+  const openChat = () => {
+    if (id && router?.push) router.push(`/(tabs)/quests/${id}/chat`);
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
@@ -55,7 +61,10 @@ export default function QuestDetailScreen() {
           {canJoin && (
             <TouchableOpacity
               style={styles.imDownButton}
-              onPress={() => setImDown(true)}
+              onPress={() => {
+                setImDown(true);
+                openChat();
+              }}
               activeOpacity={0.8}
             >
               <Text style={styles.imDownText}>I'm Down</Text>
@@ -63,15 +72,25 @@ export default function QuestDetailScreen() {
           )}
 
           {imDown && (
-            <Text style={styles.joinedText}>
-              You're in! We'll create a group chat when the quest is full.
-            </Text>
+            <>
+              <Text style={styles.joinedText}>
+                You're in! Group chat is open.
+              </Text>
+              <TouchableOpacity
+                style={styles.chatButton}
+                onPress={openChat}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="chatbubbles" size={22} color={colors.accentGreen} />
+                <Text style={styles.chatButtonText}>Open group chat</Text>
+              </TouchableOpacity>
+            </>
           )}
 
           {full && (
             <TouchableOpacity
               style={styles.chatButton}
-              onPress={() => Router.push(`/(tabs)/quests/${id}/chat`)}
+              onPress={openChat}
               activeOpacity={0.8}
             >
               <Ionicons name="chatbubbles" size={22} color={colors.accentGreen} />

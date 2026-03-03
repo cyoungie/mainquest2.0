@@ -78,9 +78,16 @@ const FEED_QUESTS = [
 export default function MainQuestTabScreen() {
   const [activeFilter, setActiveFilter] = useState<(typeof FILTERS)[number]>("Trending");
   const [following, setFollowing] = useState<Set<string>>(new Set(["jordan_r"]));
+  const [imDownQuestIds, setImDownQuestIds] = useState<Set<string>>(new Set());
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const fabBottom = insets.bottom + 49 + 12; // above tab bar + padding
+
+  const onImDown = (e: React.GestureResponderEvent, questId: string) => {
+    e.stopPropagation();
+    setImDownQuestIds((prev) => new Set(prev).add(questId));
+    if (questId && router?.push) router.push(`/(tabs)/quests/${questId}/chat` as const);
+  };
 
   const toggleFollow = (id: string) => {
     setFollowing((prev) => {
@@ -100,7 +107,7 @@ export default function MainQuestTabScreen() {
       <MainQuestHeader
         variant="light"
         rightExtra={
-          <TouchableOpacity onPress={() => router.push("/(tabs)/profile")} hitSlop={8}>
+          <TouchableOpacity onPress={() => router?.push?.("/(tabs)/profile")} hitSlop={8}>
             <View style={styles.avatar} />
           </TouchableOpacity>
         }
@@ -237,8 +244,14 @@ export default function MainQuestTabScreen() {
           const friendLabel = q.friends.length > 1
             ? `${q.friends[0].name} +${q.friends.length - 1} going`
             : `${q.friends[0].name} is going`;
+          const isImDown = imDownQuestIds.has(q.id);
           return (
-            <View key={q.id} style={styles.feedCard}>
+            <TouchableOpacity
+              key={q.id}
+              style={styles.feedCard}
+              onPress={() => router?.push?.(`/(tabs)/quests/${q.id}`)}
+              activeOpacity={0.98}
+            >
               <View style={styles.feedPhotoWrap}>
                 <Image source={q.image} style={styles.feedPhoto} resizeMode="cover" />
                 <View style={styles.feedGradient} />
@@ -268,11 +281,25 @@ export default function MainQuestTabScreen() {
                   <View style={styles.feedAvatar} />
                   <Text style={styles.feedUsername}>{q.friends.map((f) => f.name).join(", ")}</Text>
                 </View>
-                <TouchableOpacity style={styles.feedAction} hitSlop={8}>
+                <TouchableOpacity style={styles.feedAction} hitSlop={8} onPress={(e) => e.stopPropagation()}>
                   <Ionicons name="share-outline" size={20} color={colors.textOnLight} />
                 </TouchableOpacity>
               </View>
-            </View>
+              {isImDown ? (
+                <View style={styles.imDownDone}>
+                  <Ionicons name="checkmark-circle" size={20} color={colors.accentGreen} />
+                  <Text style={styles.imDownDoneText}>You're in!</Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.imDownButton}
+                  onPress={(e) => onImDown(e, q.id)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.imDownButtonText}>I'm down</Text>
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
           );
         })}
 
@@ -420,4 +447,24 @@ const styles = StyleSheet.create({
   feedActions: { flexDirection: "row", alignItems: "center", gap: spacing.xl },
   feedAction: { flexDirection: "row", alignItems: "center", gap: 4 },
   feedActionCount: { fontSize: 13, fontFamily: gotham.book, color: colors.textOnLightSecondary },
+  imDownButton: {
+    marginHorizontal: spacing.md,
+    marginBottom: spacing.md,
+    backgroundColor: colors.red,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imDownButtonText: { fontSize: 17, fontFamily: gotham.bold, color: "#fff" },
+  imDownDone: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    marginHorizontal: spacing.md,
+    marginBottom: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  imDownDoneText: { fontSize: 15, fontFamily: gotham.medium, color: colors.accentGreen },
 });
